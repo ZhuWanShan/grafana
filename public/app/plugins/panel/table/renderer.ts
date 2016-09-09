@@ -114,11 +114,15 @@ export class TableRenderer {
     // because of the fixed table headers css only solution
     // there is an issue if header cell is wider the cell
     // this hack adds header content to cell (not visible)
-    var widthHack = '';
-    if (addWidthHack) {
-      widthHack = '<div class="table-panel-width-hack">' + this.table.columns[columnIndex].text + '</div>';
-    }
+    //var widthHack = '';
+   //if (addWidthHack) {
 
+      var totalLength =  this.table.columns[columnIndex].text.length;
+
+      var visibleLength = totalLength > 200 ? 200 : totalLength;
+
+      var widthHack = '<div class="table-panel-width-hack">' + Array(visibleLength).join("?") + '</div>';
+    //}
     return '<td' + style + '>' + value + widthHack + '</td>';
   }
 

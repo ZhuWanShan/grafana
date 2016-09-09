@@ -8,7 +8,7 @@ export function exportSeriesListToCsv(seriesList) {
     var text = 'sep=;\nSeries;Time;Value\n';
     _.each(seriesList, function(series) {
         _.each(series.datapoints, function(dp) {
-            text += series.alias + ';' + new Date(dp[1]).toISOString() + ';' + dp[0] + '\n';
+            text += escapeCsv(series.alias) + ';' + escapeCsv(new Date(dp[1]).toISOString()) + ';' + dp[0] + '\n';
         });
     });
     saveSaveBlob(text, 'grafana_data_export.csv');
@@ -18,7 +18,7 @@ export function exportSeriesListToCsvColumns(seriesList) {
     var text = 'sep=;\nTime;';
     // add header
     _.each(seriesList, function(series) {
-        text += series.alias + ';';
+        text += escapeCsv(series.alias) + ';';
     });
     text = text.substring(0,text.length-1);
     text += '\n';
@@ -39,9 +39,9 @@ export function exportSeriesListToCsvColumns(seriesList) {
 
     // make text
     for (var i = 0; i < dataArr[0].length; i++) {
-        text += dataArr[0][i] + ';';
+        text += escapeCsv(dataArr[0][i]) + ';';
         for (var j = 1; j < dataArr.length; j++) {
-            text += dataArr[j][i] + ';';
+            text += escapeCsv(dataArr[j][i]) + ';';
         }
         text = text.substring(0,text.length-1);
         text += '\n';
@@ -53,18 +53,27 @@ export function exportTableDataToCsv(table) {
     var text = '';
     // add header
     _.each(table.columns, function(column) {
-        text += column.text + ';';
+        text += escapeCsv(column.text) + ';';
     });
     text += '\n';
     // process data
     _.each(table.rows, function(row) {
         _.each(row, function(value) {
-            text += value + ';';
+            text += escapeCsv(value) + ';';
         });
         text += '\n';
     });
     saveSaveBlob(text, 'grafana_data_export.csv');
 };
+
+
+function escapeCsv(value){
+    if (null == value) {
+      return '';
+    } else {
+      return (value + '').split(";").join(",");
+    }
+}
 
 export function saveSaveBlob(payload, fname) {
     var blob = new Blob([payload], { type: "text/csv;charset=utf-8" });
